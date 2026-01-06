@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سلة التسوق</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .cart-container {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: var(--spacing-xl);
+            margin-top: var(--spacing-xxl);
+        }
+
+        .cart-items {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .cart-item {
+            display: grid;
+            grid-template-columns: 100px 1fr 150px 100px 50px;
+            align-items: center;
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+        }
+
+        .cart-item-img {
+            width: 80px;
+            height: 80px;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .cart-item-img img {
+            max-height: 80%;
+        }
+
+        .cart-item-info h3 {
+            font-size: 1.125rem;
+            margin-bottom: 5px;
+        }
+
+        .cart-item-info p {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .cart-item-qty {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-glass);
+            padding: 5px 10px;
+            border-radius: var(--radius-sm);
+            width: fit-content;
+        }
+
+        .qty-btn-sm {
+            width: 24px;
+            height: 24px;
+            font-size: 1rem;
+            color: white;
+        }
+
+        .remove-btn {
+            color: var(--danger-color);
+            transition: var(--transition-fast);
+        }
+
+        .remove-btn:hover {
+            transform: scale(1.2);
+        }
+
+        .cart-summary {
+            height: fit-content;
+            padding: var(--spacing-lg);
+            position: sticky;
+            top: 100px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--spacing-md);
+            font-size: 1rem;
+        }
+
+        .summary-total {
+            border-top: 1px solid var(--border-color);
+            padding-top: var(--spacing-md);
+            margin-top: var(--spacing-md);
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: var(--accent-color);
+        }
+
+        @media (max-width: 992px) {
+            .cart-container {
+                grid-template-columns: 1fr;
+            }
+
+            .cart-item {
+                grid-template-columns: 80px 1fr 1fr;
+            }
+
+            .cart-item-price,
+            .cart-item-remove {
+                grid-column: span 1;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="header-root"></div>
+
+    <main class="section">
+        <div class="container">
+            <h1 class="section-title" data-i18n="cart">سلة التسوق</h1>
+
+            <div class="cart-container">
+                <div class="cart-items">
+                    <!-- Dynamic Items will be rendered here -->
+                </div>
+
+                <aside class="cart-summary glass">
+                    <h2 style="margin-bottom: var(--spacing-lg);" data-i18n="orderSummary">ملخص الطلب</h2>
+                    <div class="summary-row">
+                        <span data-i18n="subtotal">إجمالي المنتجات</span>
+                        <span>0.00 $</span>
+                    </div>
+                    <div class="summary-row">
+                        <span data-i18n="delivery">التوصيل</span>
+                        <span style="color: var(--success-color);" data-i18n="free">مجاني</span>
+                    </div>
+                    <div class="summary-row">
+                        <span data-i18n="taxes">الضرائب</span>
+                        <span>0.00 $</span>
+                    </div>
+                    <div class="summary-total summary-row">
+                        <span data-i18n="total">الإجمالي الكلي</span>
+                        <span>0.00 $</span>
+                    </div>
+                    <a href="checkout.html" class="btn btn-primary btn-lg"
+                        style="width: 100%; margin-top: var(--spacing-lg);">متابعة الدفع</a>
+                    <a href="products.html" class="btn btn-secondary btn-sm"
+                        style="width: 100%; margin-top: 10px;">الاستمرار في التسوق</a>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-root"></div>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>

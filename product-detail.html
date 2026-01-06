@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تفاصيل المنتج | متجر الهواتف</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .product-detail-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-xxl);
+            align-items: start;
+        }
+
+        .product-gallery {
+            position: sticky;
+            top: 100px;
+        }
+
+        .main-image {
+            width: 100%;
+            height: 500px;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .main-image img {
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .thumb-images {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-sm);
+        }
+
+        .thumb {
+            height: 80px;
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-fast);
+        }
+
+        .thumb:hover,
+        .thumb.active {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-glow);
+        }
+
+        .thumb img {
+            max-height: 80%;
+            object-fit: contain;
+        }
+
+        .product-info-detail h1 {
+            font-size: 2.5rem;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .product-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .spec-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: var(--spacing-md);
+            margin: var(--spacing-xl) 0;
+        }
+
+        .spec-item {
+            padding: var(--spacing-md);
+            background: var(--bg-glass);
+            border-radius: var(--radius-md);
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .spec-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .spec-value {
+            font-weight: 600;
+        }
+
+        .color-selection,
+        .storage-selection {
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .selection-title {
+            font-weight: 600;
+            margin-bottom: var(--spacing-sm);
+            display: block;
+        }
+
+        .options-flex {
+            display: flex;
+            gap: var(--spacing-sm);
+            flex-wrap: wrap;
+        }
+
+        .option-btn {
+            padding: 0.75rem 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            transition: var(--transition-fast);
+        }
+
+        .option-btn.active,
+        .option-btn:hover {
+            border-color: var(--primary-color);
+            color: var(--text-primary);
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .qty-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .qty-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-md);
+            background: var(--bg-glass);
+            color: white;
+            font-size: 1.25rem;
+        }
+
+        .qty-input {
+            width: 60px;
+            text-align: center;
+            background: none;
+            color: white;
+            font-size: 1.125rem;
+            font-weight: 600;
+        }
+
+        @media (max-width: 992px) {
+            .product-detail-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .product-gallery {
+                position: static;
+            }
+
+            .main-image {
+                height: 350px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="header-root"></div>
+
+    <main class="section">
+        <div class="container" style="margin-top: 50px;">
+            <div class="product-detail-grid">
+                <!-- Gallery -->
+                <div class="product-gallery">
+                    <div class="main-image glass">
+                        <img src="https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&q=80&w=800"
+                            alt="Samsung S23" id="mainImg">
+                    </div>
+                    <div class="thumb-images">
+                        <div class="thumb active"><img
+                                src="https://images.unsplash.com/photo-1592750475338-74b7b21085ab?auto=format&fit=crop&q=80&w=200"
+                                alt="Thumb"></div>
+                        <div class="thumb"><img
+                                src="https://images.unsplash.com/photo-1621330396173-e41b1cafd17f?auto=format&fit=crop&q=80&w=200"
+                                alt="Thumb"></div>
+                        <div class="thumb"><img
+                                src="https://images.unsplash.com/photo-1616348436168-de43ad0db179?auto=format&fit=crop&q=80&w=200"
+                                alt="Thumb"></div>
+                        <div class="thumb"><img
+                                src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&q=80&w=200"
+                                alt="Thumb"></div>
+                    </div>
+                </div>
+
+                <!-- Info -->
+                <div class="product-info-detail">
+                    <span class="text-gradient" style="font-weight: 700; letter-spacing: 2px;">SAMSUNG</span>
+                    <h1>Galaxy S23 Ultra 5G</h1>
+
+                    <div class="product-meta">
+                        <div class="stars">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i
+                                class="fas fa-star"></i><i class="fas fa-star"></i>
+                            <span style="color: var(--text-muted); margin-right: 10px;">(4.9 / 5.0)</span>
+                        </div>
+                        <span style="color: var(--success-color); font-weight: 600;"><i class="fas fa-check-circle"></i>
+                            متوفر في المخزن</span>
+                    </div>
+
+                    <div class="product-price" style="margin-bottom: var(--spacing-lg);">
+                        <span class="current-price" style="font-size: 2.5rem;">999.00 $</span>
+                        <span class="old-price" style="font-size: 1.5rem;">1100.00 $</span>
+                    </div>
+
+                    <p class="description" style="color: var(--text-secondary); line-height: 1.8;">
+                        قوة لا مثيل لها مع معالج Snapdragon 8 Gen 2، كاميرا بدقة 200 ميجابكسل للتصوير الليلي الاحترافي،
+                        وقلم S Pen مدمج لتعزيز الإنتاجية. شاشة Dynamic AMOLED 2X بمعدل تحديث 120 هرتز.
+                    </p>
+
+                    <div class="spec-grid">
+                        <div class="spec-item glass">
+                            <span class="spec-label">الشاشة</span>
+                            <span class="spec-value">6.8 inch QHD+</span>
+                        </div>
+                        <div class="spec-item glass">
+                            <span class="spec-label">البطارية</span>
+                            <span class="spec-value">5000 mAh</span>
+                        </div>
+                        <div class="spec-item glass">
+                            <span class="spec-label">المعالج</span>
+                            <span class="spec-value">Snapdragon 8 Gen 2</span>
+                        </div>
+                        <div class="spec-item glass">
+                            <span class="spec-label">الكاميرا</span>
+                            <span class="spec-value">200 MP Quad</span>
+                        </div>
+                    </div>
+
+                    <div class="storage-selection">
+                        <span class="selection-title">السعة التخزينية</span>
+                        <div class="options-flex">
+                            <button class="option-btn">256 GB</button>
+                            <button class="option-btn active">512 GB</button>
+                            <button class="option-btn">1 TB</button>
+                        </div>
+                    </div>
+
+                    <div class="qty-selector">
+                        <button class="qty-btn">-</button>
+                        <input type="text" class="qty-input" value="1" readonly>
+                        <button class="qty-btn">+</button>
+                    </div>
+
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary btn-lg" style="flex: 2;" data-i18n="addToCart"><i
+                                class="fas fa-shopping-basket"></i>
+                            أضف للسلة</button>
+                        <button class="btn btn-secondary btn-lg product-action-btn" style="flex: 1;"><i
+                                class="far fa-heart"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-root"></div>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>

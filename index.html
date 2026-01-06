@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الرئيسية</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+</head>
+
+<body>
+
+    <div id="header-root"></div>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <div class="hero-text animate-fadeInUp">
+                        <h1 data-i18n="heroTitle">مستقبل <span>الهواتف</span> بين يديك</h1>
+                        <p data-i18n="heroSubtitle">اكتشف أحدث الهواتف الذكية والإكسسوارات الأصلية بأفضل الأسعار وأعلى
+                            جودة.</p>
+                        <div class="hero-buttons">
+                            <a href="products.html" class="btn btn-primary btn-lg" data-i18n="shopNow">تسوق الآن</a>
+                            <a href="#featured" class="btn btn-secondary btn-lg" data-i18n="learnMore">اكتشف المزيد</a>
+                        </div>
+                        <div class="hero-stats">
+                            <!-- Stats removed (Default Content) -->
+                        </div>
+                    </div>
+                    <div class="hero-image animate-fadeIn">
+                        <div class="hero-glow"></div>
+                        <!-- Hero image removed (Default Content) -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Categories Section -->
+        <section id="categories" class="section">
+            <div class="container">
+                <h2 class="section-title animate-fadeInUp" data-i18n="categories">الأقسام</h2>
+                <div class="categories-grid">
+                    <!-- Dynamically rendered by main.js -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Featured Products -->
+        <section id="featured" class="section">
+            <div class="container">
+                <div class="flex-between animate-fadeInUp" style="margin-bottom: var(--spacing-xl);">
+                    <h2 class="section-title" style="margin-bottom: 0;" data-i18n="featuredProducts">منتجات مختارة</h2>
+                    <a href="products.html" class="btn btn-secondary btn-sm" data-i18n="shopNow">تسوق الآن</a>
+                </div>
+
+                <div class="products-grid" id="featured-products-root">
+                    <!-- Dynamically rendered by main.js -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="footer-root"></div>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+</body>
+
+</html>

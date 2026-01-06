@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المنتجات</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="css/style.css">
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/supabase.js"></script>
+    <style>
+        .products-page-container {
+            margin-top: var(--spacing-xxl);
+        }
+
+        .products-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-md);
+        }
+
+        @media (max-width: 992px) {
+            .products-page-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="header-root"></div>
+
+    <main class="section">
+        <div class="container">
+            <div class="products-page-container">
+                <!-- Products Content -->
+                <div class="products-content">
+                    <div class="products-header glass-card">
+                        <p id="product-stats-text"><span data-i18n="showing">عرض</span> <span
+                                class="current-range">0-0</span> <span data-i18n="ofProducts">من أصل</span> <span
+                                class="total-count">0</span> <span data-i18n="productsCount">منتج</span></p>
+                        <select class="form-select" style="width: 200px; padding: 0.5rem 1rem;">
+                            <option data-i18n="latest">الأحدث</option>
+                            <option data-i18n="priceLowHigh">السعر من الأقل للأعلى</option>
+                            <option data-i18n="priceHighLow">السعر من الأعلى للأقل</option>
+                        </select>
+                    </div>
+
+                    <div class="products-grid" id="products-grid-root">
+                        <!-- Dynamically rendered by main.js -->
+                    </div>
+
+                    <!-- Pagination -->
+                    <div id="pagination-root" class="flex-center" style="margin-top: var(--spacing-xxl); gap: 10px;">
+                        <button class="nav-action-btn active page-btn" data-page="1">1</button>
+                        <button class="nav-action-btn page-btn" data-page="2">2</button>
+                        <button class="nav-action-btn page-btn" data-page="3">3</button>
+                        <button class="nav-action-btn page-btn" data-page="next"><i
+                                class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-root"></div>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>

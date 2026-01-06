@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إتمام الطلب</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <div id="header-root"></div>
+
+    <main class="section">
+        <div class="container" style="max-width: 900px; margin-top: 50px;">
+            <h1 class="section-title">إتمام عملية الشراء</h1>
+
+            <div class="glass-card" style="padding: var(--spacing-xl);">
+                <form>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing-md);">
+                        <div class="form-group">
+                            <label class="form-label">الاسم الأول</label>
+                            <input type="text" class="form-input" placeholder="أحمد">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">الاسم الأخير</label>
+                            <input type="text" class="form-input" placeholder="محمد">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">رقم الهاتف</label>
+                        <input type="tel" class="form-input" placeholder="+966 5x xxx xxxx">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">العنوان</label>
+                        <input type="text" class="form-input" placeholder="المدينة، الحي، الشارع">
+                    </div>
+
+                    <div style="margin: var(--spacing-lg) 0;">
+                        <h3 style="margin-bottom: var(--spacing-sm);">طريقة الدفع</h3>
+                        <div style="display: flex; gap: var(--spacing-md); flex-wrap: wrap;">
+                            <label class="glass-card"
+                                style="flex: 1; min-width: 200px; padding: var(--spacing-md); cursor: pointer; display: flex; align-items: center; gap: 10px; border-color: var(--primary-color);">
+                                <input type="radio" name="payment" checked>
+                                <span>الدفع عند الاستلام</span>
+                                <i class="fas fa-money-bill-wave" style="margin-right: auto;"></i>
+                            </label>
+                            <label class="glass-card"
+                                style="flex: 1; min-width: 200px; padding: var(--spacing-md); cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                                <input type="radio" name="payment">
+                                <span>بطاقة ائتمان</span>
+                                <i class="fab fa-cc-visa" style="margin-right: auto;"></i>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="summary-total summary-row" style="margin-bottom: var(--spacing-lg);">
+                        <span data-i18n="orderTotalAmount">الإجمالي المطلوب دفعه:</span>
+                        <span>0.00 $</span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;"
+                        data-i18n="confirmOrder">تأكيد الطلب</button>
+                    <p class="text-center"
+                        style="margin-top: var(--spacing-md); font-size: 0.875rem; color: var(--text-secondary);">
+                        <span data-i18n="byConfirming">من خلال تأكيد الطلب، فإنك توافق على</span> <a
+                            href="terms-conditions.html" style="color: var(--primary-color);"
+                            data-i18n="termsConditions">الشروط
+                            والأحكام</a> <span data-i18n="ourPrivate">الخاصة بنا.</span>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <div id="footer-root"></div>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="faqTitle">الأسئلة الشائعة</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .faq-content {
+            max-width: 800px;
+            margin: 100px auto;
+            padding: var(--spacing-xl);
+        }
+
+        .faq-item {
+            margin-bottom: var(--spacing-md);
+            padding: var(--spacing-md);
+            cursor: pointer;
+            transition: var(--transition-normal);
+        }
+
+        .faq-item:hover {
+            border-color: var(--primary-color);
+        }
+
+        .faq-question {
+            font-weight: 700;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--accent-color);
+        }
+
+        .faq-answer {
+            margin-top: var(--spacing-sm);
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header-root"></div>
+
+    <main class="faq-content animate-fadeInUp">
+        <h1 class="section-title" data-i18n="faqTitle">الأسئلة الشائعة</h1>
+
+        <div class="faq-item glass-card">
+            <div class="faq-question">
+                <span data-i18n="faqQ1">هل المنتجات أصلية؟</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer" data-i18n="faqA1">نعم، جميع منتجاتنا أصلية 100% ومعتمدة من الوكلاء الرسميين.</div>
+        </div>
+
+        <div class="faq-item glass-card">
+            <div class="faq-question">
+                <span data-i18n="faqQ2">كم يستغرق التوصيل؟</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer" data-i18n="faqA2">يستغرق التوصيل عادة من 2 إلى 5 أيام عمل داخل المملكة.</div>
+        </div>
+
+        <div class="faq-item glass-card">
+            <div class="faq-question">
+                <span data-i18n="faqQ3">هل تتوفر خيارات الدفع عند الاستلام؟</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer" data-i18n="faqA3">نعم، نوفر خدمة الدفع عند الاستلام بالإضافة إلى الدفع الإلكتروني.
+            </div>
+        </div>
+
+        <div class="faq-item glass-card">
+            <div class="faq-question">
+                <span data-i18n="faqQ4">كيف يمكنني تتبع طلبي؟</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+            <div class="faq-answer" data-i18n="faqA4">يمكنك تتبع طلبك من خلال صفحة 'طلباتي' في ملفك الشخصي.</div>
+        </div>
+    </main>
+
+    <div id="footer-root"></div>
+
+    <!-- Scripts -->
+    <script src="js/main.js"></script>
+</body>
+
+</html>

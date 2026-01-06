@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول</title>
+    <!-- Google Fonts -->
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Main Style -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .auth-wrapper {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-md);
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 450px;
+            padding: var(--spacing-xl);
+        }
+
+        .auth-logo {
+            text-align: center;
+            margin-bottom: var(--spacing-xl);
+        }
+    </style>
+</head>
+
+<body>
+    <div id="header-root"></div>
+
+    <div class="auth-wrapper">
+        <div class="auth-container glass-card">
+            <div class="auth-logo">
+                <a href="index.html" class="logo" style="justify-content: center;">
+                    <div class="logo-icon"><i class="fas fa-mobile-alt"></i></div>
+                    <span>Phone<span class="text-gradient">Store</span></span>
+                </a>
+            </div>
+
+            <h2 class="text-center" style="margin-bottom: var(--spacing-lg);">تسجيل الدخول</h2>
+
+            <form>
+                <div class="form-group">
+                    <label class="form-label">البريد الإلكتروني</label>
+                    <input type="email" class="form-input" placeholder="example@mail.com" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">كلمة المرور</label>
+                    <input type="password" class="form-input" placeholder="••••••••" required>
+                </div>
+
+                <div class="flex-between" style="margin-bottom: var(--spacing-lg);">
+                    <label class="filter-checkbox" style="font-size: 0.875rem;">
+                        <input type="checkbox"> تذكرني
+                    </label>
+                    <a href="#" style="font-size: 0.875rem; color: var(--primary-color);">نسيت كلمة المرور؟</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">دخول</button>
+            </form>
+
+            <div class="text-center" style="margin-top: var(--spacing-xl); font-size: 0.875rem;">
+                ليس لديك حساب؟ <a href="register.html" style="color: var(--primary-color); font-weight: 600;">إنشاء حساب
+                    جديد</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="footer-root"></div>
+
+    <script src="js/main.js"></script>
+</body>
+
+</html>
