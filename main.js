@@ -443,7 +443,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const path = window.location.pathname;
     const userRole = localStorage.getItem('phoneStoreUser');
     // Simplified Admin Check for flat structure
-    const isAdminPath = path.includes('settings.html') || path.includes('admin-products.html') || path.includes('admin-categories.html');
+    const isAdminPath = path.includes('settings.html') || path.includes('admin-products.html') || path.includes('admin-categories.html') || path.includes('admin-dashboard.html');
 
     if (isAdminPath && userRole !== 'admin') {
         window.location.href = 'index.html';
@@ -675,7 +675,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             ${(() => {
                 const user = localStorage.getItem('phoneStoreUser');
                 if (user === 'admin') {
-                    return `<a href="${prefix}admin/dashboard.html" class="btn btn-secondary btn-sm" style="margin: 0 10px; white-space: nowrap;"><i class="fas fa-user-shield"></i> ${translations[currentLang].adminDashboard}</a>`;
+                    return `<a href="${prefix}admin-dashboard.html" class="btn btn-secondary btn-sm" style="margin: 0 10px; white-space: nowrap;"><i class="fas fa-user-shield"></i> ${translations[currentLang].adminDashboard}</a>`;
                 } else if (user) {
                     return `<button class="btn btn-secondary btn-sm logout-btn" style="margin: 0 10px; white-space: nowrap;"><i class="fas fa-sign-out-alt"></i> ${user}</button>`;
                 }
@@ -1019,9 +1019,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         const path = window.location.pathname;
-        if (path.includes('/admin/products.html')) {
+        if (path.includes('admin-products.html')) {
             await renderAdminProducts();
-        } else if (path.includes('/admin/categories.html')) {
+        } else if (path.includes('admin-categories.html')) {
             await renderAdminCategories();
         } else if (path.includes('favorites.html')) {
             renderFavorites();

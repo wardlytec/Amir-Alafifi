@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>إدارة المنتجات | لوحة التحكم</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase.js"></script>
+</head>
+
+<body>
+    <div class="admin-layout">
+        <aside class="admin-sidebar">
+            <a href="admin-dashboard.html" class="sidebar-brand">
+                <i class="fas fa-mobile-alt"
+                    style="font-size: 2rem; color: var(--primary-color); margin-bottom: 10px;"></i>
+                <h2>Admin Panel</h2>
+            </a>
+            <nav class="sidebar-nav">
+                <a href="admin-dashboard.html" class="nav-item" data-i18n="adminDashboard"><i
+                        class="fas fa-chart-line"></i> لوحة الإحصائيات</a>
+                <a href="admin-products.html" class="nav-item active" data-i18n="adminProducts"><i
+                        class="fas fa-box"></i>
+                    إدارة المنتجات</a>
+                <a href="admin-categories.html" class="nav-item" data-i18n="adminCategories"><i class="fas fa-tags"></i>
+                    الأقسام</a>
+                <a href="settings.html" class="nav-item" data-i18n="adminSettings"><i class="fas fa-cog"></i>
+                    الإعدادات</a>
+                <a href="index.html" class="nav-item mobile-only"><i class="fas fa-store"></i> المتجر</a>
+            </nav>
+            <div style="margin-top: auto;">
+                <a href="#" class="nav-item logout-btn" style="color: var(--danger-color);" data-i18n="logout"><i
+                        class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
+            </div>
+        </aside>
+
+        <main class="admin-main">
+            <div class="admin-header">
+                <h1 data-i18n="adminProducts">إدارة المنتجات</h1>
+                <div class="flex" style="gap: 10px;">
+                    <div class="lang-switcher">
+                        <button class="lang-btn active" data-lang="ar">AR</button>
+                        <button class="lang-btn" data-lang="en">EN</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex-between" style="margin-bottom: var(--spacing-lg);">
+                <div class="search-box" style="width: 300px;">
+                    <input type="text" class="form-input" placeholder="بحث عن منتج..." style="margin-bottom: 0;">
+                </div>
+                <button class="btn btn-primary admin-action-btn" data-action="add" data-modal="addProductModal">
+                    <i class="fas fa-plus"></i> <span data-i18n="addNewProduct">إضافة منتج جديد</span>
+                </button>
+            </div>
+
+            <!-- Products Grid -->
+            <div class="admin-grid" id="admin-products-grid">
+                <!-- Loaded dynamically via renderAdminProducts() -->
+                <div class="text-center" style="grid-column: 1/-1; padding: 2rem;">
+                    <i class="fas fa-spinner fa-spin fa-2x"></i>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Product Modal -->
+    <div class="modal" id="addProductModal">
+        <div class="modal-content glass-card">
+            <div class="modal-header">
+                <h3 class="modal-title" data-i18n="addNewProduct">إضافة منتج جديد</h3>
+                <button class="modal-close"><i class="fas fa-times"></i></button>
+            </div>
+            <form id="productForm">
+                <div class="form-group">
+                    <label class="form-label" data-i18n="productName">اسم المنتج</label>
+                    <input type="text" name="name" class="form-input" required>
+                </div>
+                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="category">القسم</label>
+                        <select name="category" class="form-select" required>
+                            <!-- Populated dynamically -->
+                            <option value="">اختر القسم...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="price">السعر</label>
+                        <input type="number" name="price" class="form-input" required min="0">
+                    </div>
+                </div>
+                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="stockCount">الكمية</label>
+                        <input type="number" name="stock" class="form-input" required min="0" value="10">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">صورة المنتج</label>
+                        <input type="file" name="imageFile" class="form-input" accept="image/*">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" data-i18n="description">الوصف</label>
+                    <textarea name="description" class="form-input" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;" data-i18n="save">حفظ</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="main.js"></script>
+    <script>
+        // Populate Categories in Select (Simple Helper)
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Wait for main.js to fetch categories
+            setTimeout(async () => {
+                if (typeof allCategories !== 'undefined' && allCategories.length > 0) {
+                    const select = document.querySelector('select[name="category"]');
+                    if (select) {
+                        allCategories.forEach(cat => {
+                            const opt = document.createElement('option');
+                            opt.value = cat.name; // Assuming stored by name or ID, main.js uses .category for filtering usually by name
+                            opt.textContent = cat.name;
+                            select.appendChild(opt);
+                        });
+                    }
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+
+</html>
