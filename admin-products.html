@@ -16,20 +16,18 @@
 <body>
     <div class="admin-layout">
         <aside class="admin-sidebar">
-            <a href="admin-dashboard.html" class="sidebar-brand">
+            <a href="index.html" class="sidebar-brand">
                 <i class="fas fa-mobile-alt"
                     style="font-size: 2rem; color: var(--primary-color); margin-bottom: 10px;"></i>
                 <h2>Admin Panel</h2>
             </a>
             <nav class="sidebar-nav">
-                <a href="admin-dashboard.html" class="nav-item" data-i18n="adminDashboard"><i
-                        class="fas fa-chart-line"></i> لوحة الإحصائيات</a>
                 <a href="admin-products.html" class="nav-item active" data-i18n="adminProducts"><i
                         class="fas fa-box"></i>
                     إدارة المنتجات</a>
                 <a href="admin-categories.html" class="nav-item" data-i18n="adminCategories"><i class="fas fa-tags"></i>
                     الأقسام</a>
-                <a href="settings.html" class="nav-item" data-i18n="adminSettings"><i class="fas fa-cog"></i>
+                <a href="admin-settings.html" class="nav-item" data-i18n="adminSettings"><i class="fas fa-cog"></i>
                     الإعدادات</a>
                 <a href="index.html" class="nav-item mobile-only"><i class="fas fa-store"></i> المتجر</a>
             </nav>
@@ -42,97 +40,393 @@
         <main class="admin-main">
             <div class="admin-header">
                 <h1 data-i18n="adminProducts">إدارة المنتجات</h1>
-                <div class="flex" style="gap: 10px;">
+                <div class="flex" style="gap: var(--spacing-md); align-items: center;">
                     <div class="lang-switcher">
                         <button class="lang-btn active" data-lang="ar">AR</button>
                         <button class="lang-btn" data-lang="en">EN</button>
                     </div>
+                    <button class="btn btn-primary admin-action-btn" data-action="add" data-i18n="addNewProduct"><i
+                            class="fas fa-plus"></i> إضافة
+                        منتج جديد</button>
                 </div>
             </div>
 
-            <div class="flex-between" style="margin-bottom: var(--spacing-lg);">
-                <div class="search-box" style="width: 300px;">
-                    <input type="text" class="form-input" placeholder="بحث عن منتج..." style="margin-bottom: 0;">
-                </div>
-                <button class="btn btn-primary admin-action-btn" data-action="add" data-modal="addProductModal">
-                    <i class="fas fa-plus"></i> <span data-i18n="addNewProduct">إضافة منتج جديد</span>
-                </button>
-            </div>
-
-            <!-- Products Grid -->
-            <div class="admin-grid" id="admin-products-grid">
-                <!-- Loaded dynamically via renderAdminProducts() -->
-                <div class="text-center" style="grid-column: 1/-1; padding: 2rem;">
-                    <i class="fas fa-spinner fa-spin fa-2x"></i>
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="product">المنتج</th>
+                            <th data-i18n="category">القسم</th>
+                            <th data-i18n="price">السعر</th>
+                            <th data-i18n="stock">المخزون</th>
+                            <th data-i18n="status">الحالة</th>
+                            <th data-i18n="itemActions">الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Empty - will be populated dynamically -->
+                    </tbody>
+                </table>
+                <div class="text-center" style="padding: var(--spacing-xl); color: var(--text-muted);">
+                    <i class="fas fa-box-open"
+                        style="font-size: 2.5rem; margin-bottom: 1rem; opacity: 0.5; color: var(--primary-color);"></i>
+                    <p>لا توجد منتجات حالياً. اضغط "إضافة منتج جديد" للبدء.</p>
                 </div>
             </div>
         </main>
     </div>
-
-    <!-- Add/Edit Product Modal -->
-    <div class="modal" id="addProductModal">
-        <div class="modal-content glass-card">
+    <!-- Add Product Modal - Redesigned -->
+    <div class="modal-overlay" id="addProductModal">
+        <div class="modal-content modal-scrollable modal-lg">
             <div class="modal-header">
-                <h3 class="modal-title" data-i18n="addNewProduct">إضافة منتج جديد</h3>
-                <button class="modal-close"><i class="fas fa-times"></i></button>
+                <h2 class="modal-title" data-i18n="addNewProduct">إضافة منتج جديد</h2>
+                <div class="modal-close"><i class="fas fa-times"></i></div>
             </div>
-            <form id="productForm">
-                <div class="form-group">
-                    <label class="form-label" data-i18n="productName">اسم المنتج</label>
-                    <input type="text" name="name" class="form-input" required>
-                </div>
-                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+            <form id="addProductForm">
+                <div class="modal-body">
+                    <!-- Basic Fields -->
                     <div class="form-group">
-                        <label class="form-label" data-i18n="category">القسم</label>
-                        <select name="category" class="form-select" required>
-                            <!-- Populated dynamically -->
-                            <option value="">اختر القسم...</option>
-                        </select>
+                        <label class="form-label">اسم المنتج *</label>
+                        <input type="text" class="form-input" required name="name"
+                            placeholder="مثال: iPhone 15 Pro Max">
+                    </div>
+
+                    <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label class="form-label">القسم *</label>
+                            <select class="form-select dark-select" required name="category" id="productCategorySelect">
+                                <option value="">اختر القسم</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">السعر *</label>
+                            <input type="number" class="form-input" required name="price" step="0.01"
+                                placeholder="999.00">
+                        </div>
+                    </div>
+
+                    <!-- Dynamic Fields Container -->
+                    <div id="dynamicFieldsContainer" style="display: none;">
+                        <div class="section-divider">
+                            <span>خصائص إضافية</span>
+                        </div>
+
+                        <!-- Brand Selection with Add New -->
+                        <div class="form-group" id="brandGroup">
+                            <label class="form-label">العلامة التجارية</label>
+                            <div class="input-with-action">
+                                <select class="form-select dark-select" name="brand" id="productBrandSelect">
+                                    <option value="">اختر العلامة التجارية</option>
+                                </select>
+                                <button type="button" class="btn btn-sm btn-secondary" id="addBrandBtn"
+                                    title="إضافة علامة جديدة">
+                                    <i class="fas fa-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Storage -->
+                        <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 20px;" id="specsGroup">
+                            <div class="form-group" id="storageGroup">
+                                <label class="form-label">المساحة التخزينية</label>
+                                <select class="form-select dark-select" name="storage">
+                                    <option value="">اختر المساحة</option>
+                                    <option value="32GB">32GB</option>
+                                    <option value="64GB">64GB</option>
+                                    <option value="128GB">128GB</option>
+                                    <option value="256GB">256GB</option>
+                                    <option value="512GB">512GB</option>
+                                    <option value="1TB">1TB</option>
+                                </select>
+                            </div>
+                            <div class="form-group" id="colorGroup">
+                                <label class="form-label">اللون</label>
+                                <input type="text" class="form-input" name="color" placeholder="مثال: أسود، ذهبي">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Images Upload - Always Visible -->
+                    <div class="section-divider">
+                        <span>صور المنتج</span>
                     </div>
                     <div class="form-group">
-                        <label class="form-label" data-i18n="price">السعر</label>
-                        <input type="number" name="price" class="form-input" required min="0">
+                        <label class="form-label">صور المنتج * (يمكن رفع عدة صور)</label>
+                        <div class="images-upload-container">
+                            <input type="file" class="form-input" name="imageFiles" accept="image/*" multiple
+                                id="productImagesInput" style="display: none;">
+                            <label for="productImagesInput" class="upload-area">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>اضغط لاختيار الصور أو اسحبها هنا</span>
+                            </label>
+                            <div id="imagesPreview" class="images-preview"></div>
+                        </div>
                     </div>
-                </div>
-                <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 10px;">
+
+                    <!-- Description - Always Visible -->
                     <div class="form-group">
-                        <label class="form-label" data-i18n="stockCount">الكمية</label>
-                        <input type="number" name="stock" class="form-input" required min="0" value="10">
+                        <label class="form-label">وصف المنتج *</label>
+                        <textarea class="form-input" name="description" rows="4" required
+                            placeholder="اكتب وصفاً تفصيلياً للمنتج..."></textarea>
                     </div>
+
+                    <!-- Availability Toggle -->
                     <div class="form-group">
-                        <label class="form-label">صورة المنتج</label>
-                        <input type="file" name="imageFile" class="form-input" accept="image/*">
+                        <label class="toggle-container">
+                            <input type="checkbox" name="inStock" checked>
+                            <span class="toggle-slider"></span>
+                            <span class="toggle-label">متوفر في المخزون</span>
+                        </label>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label class="form-label" data-i18n="description">الوصف</label>
-                    <textarea name="description" class="form-input" rows="3"></textarea>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary modal-close-btn">إلغاء</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> حفظ المنتج
+                    </button>
                 </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;" data-i18n="save">حفظ</button>
             </form>
         </div>
     </div>
 
+    <!-- Add Brand Modal -->
+    <div class="modal-overlay" id="addBrandModal">
+        <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+                <h3 class="modal-title">إضافة علامة تجارية جديدة</h3>
+                <div class="modal-close"><i class="fas fa-times"></i></div>
+            </div>
+            <div class="modal-body">
+                <form id="addBrandForm">
+                    <div class="form-group">
+                        <label class="form-label" data-i18n="brandName">اسم العلامة التجارية</label>
+                        <input type="text" class="form-input" name="brandName" required
+                            placeholder="مثال: Apple، Samsung">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary modal-close-btn"
+                            data-i18n="cancel">إلغاء</button>
+                        <button type="submit" class="btn btn-primary" data-i18n="add">إضافة</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Modal Scrollable & Fixed Layout */
+        .modal-scrollable {
+            max-height: 90vh;
+            display: flex !important;
+            flex-direction: column;
+            padding: 0 !important;
+            /* Reset padding to allow full-width header/footer */
+            overflow: hidden;
+        }
+
+        .modal-scrollable .modal-header {
+            padding: var(--spacing-lg) var(--spacing-xl);
+            margin: 0;
+            flex-shrink: 0;
+        }
+
+        .modal-scrollable #addProductForm {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            height: 100%;
+            flex: 1;
+        }
+
+        .modal-scrollable .modal-body {
+            overflow-y: auto;
+            flex: 1;
+            padding: var(--spacing-xl);
+            /* custom scrollbar */
+        }
+
+        .modal-scrollable .modal-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .modal-scrollable .modal-body::-webkit-scrollbar-thumb {
+            background: var(--border-color);
+            border-radius: 10px;
+        }
+
+        .modal-scrollable .modal-footer {
+            padding: var(--spacing-lg) var(--spacing-xl);
+            border-top: 1px solid var(--border-color);
+            margin: 0;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--spacing-md);
+            background: var(--bg-secondary);
+        }
+
+        /* Modal Width Variants */
+        .modal-lg {
+            max-width: 800px !important;
+        }
+
+        /* Dark Select */
+        .dark-select {
+            background: var(--bg-card) !important;
+            border-color: var(--border-color) !important;
+            color: var(--text-primary) !important;
+        }
+
+        .dark-select option {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            padding: 10px;
+        }
+
+        /* Section Divider */
+        .section-divider {
+            display: flex;
+            align-items: center;
+            margin: var(--spacing-lg) 0;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        .section-divider::before,
+        .section-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        .section-divider span {
+            padding: 0 var(--spacing-md);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Input with Action */
+        .input-with-action {
+            display: flex;
+            gap: 10px;
+        }
+
+        .input-with-action select {
+            flex: 1;
+        }
+
+        /* Upload Area */
+        .upload-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: var(--spacing-xl);
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: var(--transition-fast);
+            color: var(--text-muted);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+        }
+
+        .upload-area i {
+            font-size: 2rem;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        /* Images Preview */
+        .images-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: var(--spacing-md);
+        }
+
+        .image-preview-item {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .image-preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-preview-item .remove-image {
+            position: absolute;
+            top: 2px;
+            right: 2px;
+            width: 20px;
+            height: 20px;
+            background: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            cursor: pointer;
+        }
+
+        /* Toggle Switch */
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            cursor: pointer;
+        }
+
+        .toggle-container input {
+            display: none;
+        }
+
+        .toggle-slider {
+            width: 50px;
+            height: 26px;
+            background: var(--border-color);
+            border-radius: 13px;
+            position: relative;
+            transition: var(--transition-fast);
+        }
+
+        .toggle-slider::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            transition: var(--transition-fast);
+        }
+
+        .toggle-container input:checked+.toggle-slider {
+            background: var(--success-color);
+        }
+
+        .toggle-container input:checked+.toggle-slider::before {
+            transform: translateX(24px);
+        }
+
+        .toggle-label {
+            font-weight: 500;
+        }
+    </style>
+
     <script src="main.js"></script>
-    <script>
-        // Populate Categories in Select (Simple Helper)
-        document.addEventListener('DOMContentLoaded', async () => {
-            // Wait for main.js to fetch categories
-            setTimeout(async () => {
-                if (typeof allCategories !== 'undefined' && allCategories.length > 0) {
-                    const select = document.querySelector('select[name="category"]');
-                    if (select) {
-                        allCategories.forEach(cat => {
-                            const opt = document.createElement('option');
-                            opt.value = cat.name; // Assuming stored by name or ID, main.js uses .category for filtering usually by name
-                            opt.textContent = cat.name;
-                            select.appendChild(opt);
-                        });
-                    }
-                }
-            }, 1000);
-        });
-    </script>
 </body>
 
 </html>

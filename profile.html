@@ -18,17 +18,29 @@
             <div class="admin-layout" style="grid-template-columns: 250px 1fr; gap: var(--spacing-xl);">
                 <aside class="glass-card" style="padding: var(--spacing-md); height: fit-content;">
                     <div class="text-center" style="margin-bottom: var(--spacing-lg);">
-                        <img src="https://ui-avatars.com/api/?name=User&background=667eea&color=fff"
-                            style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 10px;">
-                        <h3>أحمد محمد</h3>
-                        <p style="color: var(--text-muted); font-size: 0.875rem;">ahmed@example.com</p>
+                        <div id="userProfileAvatar" style="margin-bottom: 10px;">
+                            <img src="https://ui-avatars.com/api/?name=User&background=667eea&color=fff"
+                                style="width: 80px; height: 80px; border-radius: 50%;">
+                        </div>
+                        <h3 id="profileUserName">---</h3>
+                        <p id="profileUserEmail" style="color: var(--text-muted); font-size: 0.875rem;">---</p>
                     </div>
                     <nav style="display: flex; flex-direction: column; gap: 5px;">
                         <a href="profile.html" class="nav-link active"
-                            style="padding: 10px; display: block; background: rgba(102, 126, 234, 0.1); border-radius: 8px;">الملف
-                            الشخصي</a>
-                        <a href="order-history.html" class="nav-link" style="padding: 10px; display: block;">طلباتي</a>
-                        <a href="#" class="nav-link" style="padding: 10px; display: block;">العناوين</a>
+                            style="padding: 10px; display: block; background: rgba(102, 126, 234, 0.1); border-radius: 8px;">
+                            <i class="fas fa-user-circle" style="margin: 0 5px;"></i>
+                            <span data-i18n="myProfile">الملف الشخصي</span>
+                        </a>
+                        <a href="orders.html" class="nav-link"
+                            style="padding: 10px; display: block; border-radius: 8px; transition: all 0.3s;">
+                            <i class="fas fa-box" style="margin: 0 5px;"></i>
+                            <span data-i18n="myOrders">طلباتي</span>
+                        </a>
+                        <button class="nav-link logout-trigger-btn"
+                            style="padding: 10px; display: flex; align-items: center; gap: 8px; border: none; background: transparent; color: var(--danger-color); cursor: pointer; border-radius: 8px; width: 100%; transition: all 0.3s; font-family: inherit; font-size: 1rem;">
+                            <i class="fas fa-sign-out-alt"></i>
+                            <span data-i18n="logout">تسجيل الخروج</span>
+                        </button>
                     </nav>
                 </aside>
 

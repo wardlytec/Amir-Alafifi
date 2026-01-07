@@ -118,7 +118,7 @@ async function deleteCategory(id) {
 }
 
 // --- Image Upload Function ---
-async function uploadImage(file, bucket = 'images') {
+async function uploadImage(file, bucket = 'categories') {
     const fileExt = file.name.split('.').pop();
     const fileName = `${Date.now()}.${fileExt}`;
     const filePath = `${fileName}`;
@@ -128,19 +128,16 @@ async function uploadImage(file, bucket = 'images') {
         .upload(filePath, file);
 
     if (error) {
-        if (error.message.includes('Bucket not found')) {
-            if (bucket !== 'categories' && bucket !== 'products') {
-                console.log(`Bucket ${bucket} not found, trying 'categories'...`);
-                return uploadImage(file, 'categories');
-            } else if (bucket === 'categories') {
-                console.log(`Bucket 'categories' not found, trying 'images'...`);
-                return uploadImage(file, 'images');
-            } else if (bucket === 'images') {
-                console.log(`Bucket 'images' not found, trying 'public'...`);
-                return uploadImage(file, 'public');
+        if (error.message.includes('Bucket not found') || error.message.includes('bucket_not_found')) {
+            const fallbacks = ['products', 'categories', 'images', 'public'];
+            const currentIndex = fallbacks.indexOf(bucket);
+            if (currentIndex !== -1 && currentIndex < fallbacks.length - 1) {
+                const nextBucket = fallbacks[currentIndex + 1];
+                console.log(`Bucket '${bucket}' not found, trying '${nextBucket}'...`);
+                return uploadImage(file, nextBucket);
             }
         }
-        console.error('Error uploading image:', error);
+        console.error(`Error uploading to bucket ${bucket}:`, error);
         return null;
     }
 
@@ -150,6 +147,49 @@ async function uploadImage(file, bucket = 'images') {
         .getPublicUrl(filePath);
 
     return urlData.publicUrl;
+}
+
+// --- Brand Functions ---
+async function fetchBrands(categoryId = null) {
+    let query = supabaseClient
+        .from('brands')
+        .select('*')
+        .order('name', { ascending: true });
+
+    if (categoryId) {
+        query = query.eq('category_id', categoryId);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+        console.error('Error fetching brands:', error);
+        return [];
+    }
+    return data || [];
+}
+
+async function addBrand(brand) {
+    const { data, error } = await supabaseClient
+        .from('brands')
+        .insert([brand])
+        .select();
+
+    if (error) {
+        console.error('Error adding brand:', error);
+        return null;
+    }
+    return data[0];
+}
+
+// --- Multiple Image Upload ---
+async function uploadMultipleImages(files, bucket = 'categories') {
+    const urls = [];
+    for (const file of files) {
+        const url = await uploadImage(file, bucket);
+        if (url) urls.push(url);
+    }
+    return urls;
 }
 
 // Make functions globally available
@@ -162,5 +202,9 @@ window.addCategory = addCategory;
 window.updateCategory = updateCategory;
 window.deleteCategory = deleteCategory;
 window.uploadImage = uploadImage;
+window.uploadMultipleImages = uploadMultipleImages;
+window.fetchBrands = fetchBrands;
+window.addBrand = addBrand;
 
 console.log('Supabase client initialized successfully!');
+

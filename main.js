@@ -51,6 +51,10 @@ const translations = {
         cart: "السلة",
         search: "بحث...",
         logout: "تسجيل الخروج",
+        myProfile: "ملفي الشخصي",
+        myOrders: "طلباتي",
+        logoutConfirm: "هل أنت متأكد من تسجيل الخروج؟",
+        logoutConfirmTitle: "تسجيل الخروج",
 
         // About Page
         aboutTitle: "قصة متجرنا",
@@ -160,6 +164,14 @@ const translations = {
         categoryName: "اسم القسم",
         categoryIcon: "أيقونة القسم (FontAwesome)",
         categoryProducts: "عدد المنتجات",
+        selectBrand: "اختر العلامة التجارية",
+        brandName: "اسم العلامة التجارية",
+        building: "المبنى (رقم أو اسم)",
+        floor: "الطابق",
+        apartment: "رقم الشقة",
+        location: "رابط الموقع أو الموقع الدقيق",
+        locationPlaceholder: "رابط خرائط جوجل أو وصف دقيق للموقع",
+        address: "العنوان التفصيلي (المدينة، الحي، الشارع)",
 
         // Privacy Policy Page
         privacyTitle: "سياسة الخصوصية",
@@ -263,6 +275,10 @@ const translations = {
         cart: "Cart",
         search: "Search...",
         logout: "Logout",
+        myProfile: "My Profile",
+        myOrders: "My Orders",
+        logoutConfirm: "Are you sure you want to logout?",
+        logoutConfirmTitle: "Logout",
 
         // About Page
         aboutTitle: "Our Story",
@@ -383,9 +399,17 @@ const translations = {
         save: "Save",
         cancel: "Cancel",
         selectCategory: "Select Category",
+        selectBrand: "Select Brand",
+        brandName: "Brand Name",
         categoryName: "Category Name",
         categoryIcon: "Category Icon (FontAwesome)",
         categoryProducts: "Products Count",
+        building: "Building (Name or Number)",
+        floor: "Floor",
+        apartment: "Apartment Number",
+        location: "Location Link or Description",
+        locationPlaceholder: "Google Maps link or precise location description",
+        address: "Detailed Address (City, District, Street)",
 
         // Privacy Policy Page
         privacyTitle: "Privacy Policy",
@@ -565,6 +589,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- Check Out Guard ---
+    document.addEventListener('click', (e) => {
+        if (e.target.closest('.checkout-btn')) {
+            const user = localStorage.getItem('phoneStoreUser');
+            if (!user) {
+                e.preventDefault();
+                showToast(currentLang === 'ar' ? 'يرجى تسجيل الدخول أولاً لإتمام الطلب' : 'Please login first to complete your order', 'warning');
+                const authModal = document.getElementById('authModal');
+                if (authModal) {
+                    authModal.classList.add('active');
+                } else {
+                    if (typeof initAuthModal === 'function') initAuthModal();
+                    document.getElementById('authModal')?.classList.add('active');
+                }
+            }
+        }
+    });
+
     // Close menu on link click
     document.querySelectorAll('.nav-link').forEach(link => {
         link.addEventListener('click', () => {
@@ -588,6 +630,26 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- Shared Product Database (Supabase) ---
     let allProducts = [];
     let allCategories = [];
+    let cartItems = JSON.parse(localStorage.getItem('phoneStoreCart') || '[]');
+    let wishlistItems = JSON.parse(localStorage.getItem('phoneStoreWishlist') || '[]');
+
+    const updateCartCount = () => {
+        const count = cartItems.reduce((total, item) => total + item.quantity, 0);
+        document.querySelectorAll('.cart-count').forEach(el => {
+            el.textContent = count;
+            el.style.display = count > 0 ? 'flex' : 'none';
+        });
+    };
+
+    const updateWishlistCount = (count) => {
+        document.querySelectorAll('.wishlist-count').forEach(el => {
+            el.textContent = count;
+            el.style.display = count > 0 ? 'flex' : 'none';
+        });
+    };
+
+    updateCartCount();
+    updateWishlistCount(wishlistItems.length);
 
     // --- Category Card Renderer (Updated for images) ---
     const renderCategoryCard = (cat, delayClass = '') => {
@@ -672,15 +734,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         <div class="desktop-only flex" style="align-items: center; gap: var(--spacing-sm);">
                             <a href="#" class="nav-action-btn"><i class="fas fa-search"></i></a>
-                            ${(() => {
-                const user = localStorage.getItem('phoneStoreUser');
-                if (user === 'admin') {
-                    return `<a href="${prefix}admin-dashboard.html" class="btn btn-secondary btn-sm" style="margin: 0 10px; white-space: nowrap;"><i class="fas fa-user-shield"></i> ${translations[currentLang].adminDashboard}</a>`;
-                } else if (user) {
-                    return `<button class="btn btn-secondary btn-sm logout-btn" style="margin: 0 10px; white-space: nowrap;"><i class="fas fa-sign-out-alt"></i> ${user}</button>`;
-                }
-                return `<button class="btn btn-primary btn-sm login-trigger-btn" data-i18n="login" style="margin: 0 10px; white-space: nowrap;">${translations[currentLang].login}</button>`;
-            })()}
                             <a href="${prefix}favorites.html" class="nav-action-btn">
                                 <i class="far fa-heart"></i>
                                 <span class="wishlist-count">0</span>
@@ -689,6 +742,38 @@ document.addEventListener('DOMContentLoaded', () => {
                                 <i class="fas fa-shopping-cart"></i>
                                 <span class="cart-count">0</span>
                             </a>
+                            ${(() => {
+                const user = localStorage.getItem('phoneStoreUser');
+                if (user === 'admin') {
+                    return `<a href="${prefix}admin-products.html" class="btn btn-secondary btn-sm" style="margin: 0 10px; white-space: nowrap;"><i class="fas fa-user-shield"></i> ${translations[currentLang].adminDashboard}</a>`;
+                } else if (user) {
+                    return `
+                        <div class="user-dropdown-container">
+                            <button class="nav-action-btn user-dropdown-btn">
+                                <i class="fas fa-user-circle" style="font-size: 1.5rem;"></i>
+                            </button>
+                            <div class="user-dropdown-menu">
+                                <div class="user-info-header" style="padding: 12px 20px; border-bottom: 1px solid var(--border-color); margin-bottom: 8px;">
+                                    <p style="font-weight: 600; font-size: 0.875rem; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; max-width: 180px;">${user}</p>
+                                </div>
+                                <a href="${prefix}profile.html" class="user-dropdown-item">
+                                    <i class="fas fa-user"></i>
+                                    <span data-i18n="myProfile">${translations[currentLang].myProfile}</span>
+                                </a>
+                                <a href="${prefix}orders.html" class="user-dropdown-item">
+                                    <i class="fas fa-box"></i>
+                                    <span data-i18n="myOrders">${translations[currentLang].myOrders}</span>
+                                </a>
+                                <button class="user-dropdown-item logout-trigger-btn logout">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span data-i18n="logout">${translations[currentLang].logout}</span>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+                return `<button class="btn btn-primary btn-sm login-trigger-btn" data-i18n="login" style="margin: 0 10px; white-space: nowrap;">${translations[currentLang].login}</button>`;
+            })()}
                         </div>
                     </div>
                 </div>
@@ -719,10 +804,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.getElementById('mobile-nav-root').innerHTML = `
             <div class="mobile-bottom-nav">
-                <a href="#" class="nav-item nav-item-featured ${user ? 'logout-btn' : 'login-trigger-btn'}">
-                    <i class="fas ${user ? 'fa-sign-out-alt' : 'fa-user-plus'}"></i>
-                    <span>${user ? translations[currentLang].logout : translations[currentLang].login}</span>
-                </a>
                 <a href="${prefix}index.html" class="nav-item ${isHome ? 'active' : ''}">
                     <i class="fas fa-home"></i>
                     <span data-i18n="home">${translations[currentLang].home}</span>
@@ -742,6 +823,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <a href="${prefix}cart.html" class="nav-item ${isCart ? 'active' : ''}">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="cart-count">0</span>
+                </a>
+                <a href="${user ? prefix + 'profile.html' : '#'}" class="nav-item nav-item-featured ${!user ? 'login-trigger-btn' : ''}">
+                    <i class="fas ${user ? 'fa-user-circle' : 'fa-user-plus'}"></i>
+                    <span>${user ? translations[currentLang].myProfile : translations[currentLang].login}</span>
                 </a>
             </div>
         `;
@@ -833,8 +918,13 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
                 <div class="product-info">
-                    <span class="product-category">${categoryName}</span>
-                    <h3 class="product-name"><a href="product-detail.html?id=${p.id}">${p.name}</a></h3>
+                    <div class="flex" style="justify-content: space-between; align-items: center; margin-bottom: 5px;">
+                        <span class="product-category">${categoryName}</span>
+                        <span class="status-badge ${p.in_stock ? 'status-completed' : 'status-failed'}" style="font-size: 0.75rem; padding: 2px 8px;">
+                            ${p.in_stock ? (translations[currentLang].inStock || 'متوفر') : (translations[currentLang].outOfStock || 'نفذت')}
+                        </span>
+                    </div>
+                    <h3 class="product-name"><a href="product-detail.html?id=${p.id}">${escapeHTML(p.name)}</a></h3>
                     <div class="product-rating">
                         <div class="stars">
                             <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
@@ -844,7 +934,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="product-price">
                         <span class="current-price">$${parseFloat(p.price).toLocaleString()}</span>
                     </div>
-                    <button class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-md);" data-i18n="addToCart">${translations[currentLang].addToCart}</button>
+                    <button class="btn btn-primary" style="width: 100%; margin-top: var(--spacing-md);" 
+                        data-i18n="addToCart" ${!p.in_stock ? 'disabled' : ''}>
+                        ${translations[currentLang].addToCart}
+                    </button>
                 </div>
             </div>
         `;
@@ -871,6 +964,7 @@ document.addEventListener('DOMContentLoaded', () => {
             allProducts = await fetchProducts();
         }
 
+        // Featured products (usually on homepage)
         if (featuredRoot) {
             if (allProducts.length === 0) {
                 featuredRoot.innerHTML = emptyHTML;
@@ -879,24 +973,53 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
 
+        // Main products grid with filtering
         if (productsGridRoot) {
-            if (allProducts.length === 0) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryFilter = urlParams.get('category');
+
+            let filteredProducts = allProducts;
+            if (categoryFilter) {
+                filteredProducts = allProducts.filter(p => p.category == categoryFilter);
+            }
+
+            if (filteredProducts.length === 0) {
                 productsGridRoot.innerHTML = emptyHTML;
                 if (paginationRoot) paginationRoot.style.display = 'none';
                 if (statsHeader) statsHeader.style.display = 'none';
             } else {
-                productsGridRoot.innerHTML = allProducts.map(p => renderProductCard(p)).join('');
+                productsGridRoot.innerHTML = filteredProducts.map(p => renderProductCard(p)).join('');
                 if (paginationRoot) paginationRoot.style.display = 'flex';
                 if (statsHeader) {
                     statsHeader.style.display = 'flex';
                     const rangeEl = statsHeader.querySelector('.current-range');
                     const totalEl = statsHeader.querySelector('.total-count');
-                    if (rangeEl) rangeEl.textContent = `1-${Math.min(12, allProducts.length)}`;
-                    if (totalEl) totalEl.textContent = allProducts.length;
+                    if (rangeEl) rangeEl.textContent = `1-${Math.min(12, filteredProducts.length)}`;
+                    if (totalEl) totalEl.textContent = filteredProducts.length;
                 }
             }
         }
+    };
 
+    // --- Favorites/Wishlist Renderer ---
+    const renderFavorites = () => {
+        const grid = document.querySelector('.products-grid');
+        if (!grid) return;
+
+        const wishlistItems = JSON.parse(localStorage.getItem('phoneStoreWishlist') || '[]');
+
+        if (wishlistItems.length === 0) {
+            grid.innerHTML = `
+                <div class="text-center" style="grid-column: 1/-1; padding: var(--spacing-xxl); color: var(--text-muted);">
+                    <i class="far fa-heart" style="font-size: 3rem; margin-bottom: var(--spacing-md); opacity: 0.5;"></i>
+                    <p data-i18n="noFavorites">${translations[currentLang].noFavorites}</p>
+                    <a href="products.html" class="btn btn-primary" style="margin-top: var(--spacing-lg);" data-i18n="shopNow">${translations[currentLang].shopNow}</a>
+                </div>
+            `;
+            return;
+        }
+
+        grid.innerHTML = wishlistItems.map((p, i) => renderProductCard(p, `stagger-${i + 1}`)).join('');
     };
 
     // --- Admin Rendering Functions ---
@@ -951,7 +1074,11 @@ document.addEventListener('DOMContentLoaded', () => {
                     </td>
                     <td>${escapeHTML(categoryName)}</td>
                     <td>$${parseFloat(p.price).toLocaleString()}</td>
-                    <td>${p.stock}</td>
+                    <td>
+                        <span class="status-badge ${p.in_stock ? 'status-completed' : 'status-failed'}">
+                            ${p.in_stock ? (translations[currentLang].inStock || 'متوفر') : (translations[currentLang].outOfStock || 'نفذت')}
+                        </span>
+                    </td>
                     <td><span class="status-badge status-completed" data-i18n="active">${translations[currentLang].active}</span></td>
                     <td>
                         <div class="action-btns">
@@ -1021,13 +1148,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const path = window.location.pathname;
         if (path.includes('admin-products.html')) {
             await renderAdminProducts();
+            if (typeof populateProductCategories === 'function') populateProductCategories();
         } else if (path.includes('admin-categories.html')) {
             await renderAdminCategories();
         } else if (path.includes('favorites.html')) {
             renderFavorites();
+        } else if (path.includes('profile.html')) {
+            const user = localStorage.getItem('phoneStoreUser');
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+            // Populate profile page data
+            const nameEl = document.getElementById('profileUserName');
+            const emailEl = document.getElementById('profileUserEmail');
+            if (nameEl) nameEl.textContent = user;
+            if (emailEl) emailEl.textContent = user.includes('@') ? user : '';
+
+            const avatarImg = document.querySelector('#userProfileAvatar img');
+            if (avatarImg) avatarImg.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(user)}&background=667eea&color=fff`;
         } else if (path.includes('product-detail.html')) {
             await loadProductDetail();
-        } else if (path.includes('/admin/settings.html')) {
+        } else if (path.includes('settings.html')) {
             const storeNameInput = document.getElementById('storeNameInput');
             if (storeNameInput) storeNameInput.value = siteName;
 
@@ -1039,6 +1181,12 @@ document.addEventListener('DOMContentLoaded', () => {
             if (preview && savedImg) {
                 preview.innerHTML = `<img src="${savedImg}" style="width: 100%; height: 100%; object-fit: cover;">`;
             }
+        } else if (path.includes('checkout.html')) {
+            if (cartItems.length === 0) {
+                window.location.href = 'index.html';
+                return;
+            }
+            updateCartTotals();
         } else {
             try {
                 await renderProductGrid();
@@ -1070,8 +1218,146 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Initialize Components
-    initApp();
+    // --- Product Modal Dynamic Fields Logic ---
+    const initProductModal = () => {
+        const categorySelect = document.getElementById('productCategorySelect');
+        const dynamicFieldsContainer = document.getElementById('dynamicFieldsContainer');
+        const brandSelect = document.getElementById('productBrandSelect');
+        const addBrandBtn = document.getElementById('addBrandBtn');
+        const addBrandModal = document.getElementById('addBrandModal');
+        const addBrandForm = document.getElementById('addBrandForm');
+        const productImagesInput = document.getElementById('productImagesInput');
+        const imagesPreview = document.getElementById('imagesPreview');
+
+        if (!categorySelect) return;
+
+        // Populate Categories helper
+        const populateCategories = () => {
+            const currentVal = categorySelect.value;
+            categorySelect.innerHTML = `<option value="">${translations[currentLang].selectCategory || 'اختر القسم'}</option>`;
+            allCategories.forEach(cat => {
+                const option = document.createElement('option');
+                option.value = cat.id;
+                option.textContent = cat.name;
+                categorySelect.appendChild(option);
+            });
+            if (currentVal) categorySelect.value = currentVal;
+        };
+        window.populateProductCategories = populateCategories;
+        populateCategories();
+
+        // Store selected files
+        let selectedFiles = [];
+
+        // Category change handler - show/hide dynamic fields
+        categorySelect.addEventListener('change', async (e) => {
+            const categoryId = e.target.value;
+
+            if (categoryId) {
+                dynamicFieldsContainer.style.display = 'block';
+
+                // Load all brands (Global)
+                if (typeof fetchBrands === 'function') {
+                    const brands = await fetchBrands(); // Don't pass categoryId
+                    brandSelect.innerHTML = `<option value="">${translations[currentLang].selectBrand || 'اختر العلامة التجارية'}</option>`;
+                    brands.forEach(brand => {
+                        brandSelect.innerHTML += `<option value="${brand.id}">${brand.name}</option>`;
+                    });
+                }
+            } else {
+                dynamicFieldsContainer.style.display = 'none';
+            }
+        });
+
+        // Add Brand Button Click
+        if (addBrandBtn && addBrandModal) {
+            addBrandBtn.addEventListener('click', () => {
+                addBrandModal.classList.add('active');
+            });
+        }
+
+        // Add Brand Form Submit
+        if (addBrandForm) {
+            addBrandForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const brandName = addBrandForm.brandName.value.trim();
+                const categoryId = categorySelect.value;
+
+                if (!brandName) {
+                    showToast(currentLang === 'ar' ? 'يرجى إدخال اسم العلامة أولاً' : 'Please enter brand name first', 'error');
+                    return;
+                }
+
+                const submitBtn = addBrandForm.querySelector('[type="submit"]');
+                submitBtn.disabled = true;
+                submitBtn.textContent = currentLang === 'ar' ? 'جاري الإضافة...' : 'Adding...';
+
+                if (typeof addBrand === 'function') {
+                    const result = await addBrand({ name: brandName, category_id: categoryId });
+                    if (result) {
+                        // Add to select
+                        const option = document.createElement('option');
+                        option.value = result.id;
+                        option.textContent = result.name;
+                        option.selected = true;
+                        brandSelect.appendChild(option);
+
+                        showToast(currentLang === 'ar' ? 'تم إضافة العلامة التجارية بنجاح' : 'Brand added successfully');
+                        addBrandForm.reset();
+                        addBrandModal.classList.remove('active');
+                    } else {
+                        showToast(currentLang === 'ar' ? 'حدث خطأ أثناء الإضافة' : 'Error adding brand', 'error');
+                    }
+                }
+
+                submitBtn.disabled = false;
+                submitBtn.textContent = currentLang === 'ar' ? 'إضافة' : 'Add';
+            });
+        }
+
+        // Image Preview Handler
+        if (productImagesInput && imagesPreview) {
+            productImagesInput.addEventListener('change', (e) => {
+                const files = Array.from(e.target.files);
+                selectedFiles = [...selectedFiles, ...files];
+                updateImagesPreview();
+            });
+        }
+
+        const updateImagesPreview = () => {
+            if (!imagesPreview) return;
+            imagesPreview.innerHTML = '';
+
+            selectedFiles.forEach((file, index) => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const div = document.createElement('div');
+                    div.className = 'image-preview-item';
+                    div.innerHTML = `
+                        <img src="${e.target.result}" alt="Preview">
+                        <div class="remove-image" data-index="${index}"><i class="fas fa-times"></i></div>
+                    `;
+                    imagesPreview.appendChild(div);
+
+                    // Remove image handler
+                    div.querySelector('.remove-image').addEventListener('click', () => {
+                        selectedFiles.splice(index, 1);
+                        updateImagesPreview();
+                    });
+                };
+                reader.readAsDataURL(file);
+            });
+        };
+
+        // Store selectedFiles globally for form submission
+        window.getSelectedProductImages = () => selectedFiles;
+        window.clearSelectedProductImages = () => {
+            selectedFiles = [];
+            if (imagesPreview) imagesPreview.innerHTML = '';
+        };
+    };
+
+    initProductModal();
 
     // --- Global Search System ---
     const initSearch = () => {
@@ -1198,14 +1484,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const toast = document.createElement('div');
         toast.className = `toast ${type}`;
-
         const icon = type === 'success' ? 'fa-check-circle' : 'fa-info-circle';
 
         toast.innerHTML = `
             <i class="fas ${icon}"></i>
             <span>${message}</span>
         `;
-
         container.appendChild(toast);
 
         setTimeout(() => {
@@ -1216,40 +1500,84 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 3000);
     };
 
-    // --- Product Actions ---
-    const updateCartCount = (count) => {
-        cartCountValue = count;
-        const cartCounts = document.querySelectorAll('.cart-count');
-        cartCounts.forEach(el => {
-            el.textContent = count;
-        });
+    const showLogoutModal = () => {
+        let overlay = document.querySelector('.logout-modal-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'logout-modal-overlay';
+            overlay.innerHTML = `
+                <div class="logout-modal">
+                    <div class="logout-modal-icon">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </div>
+                    <h3></h3>
+                    <p></p>
+                    <div class="logout-modal-actions">
+                        <button class="btn btn-secondary cancel-logout"></button>
+                        <button class="btn btn-primary confirm-logout" style="background: var(--danger-color); border-color: var(--danger-color);"></button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+
+            overlay.querySelector('.cancel-logout').addEventListener('click', () => {
+                overlay.classList.remove('active');
+            });
+
+            overlay.querySelector('.confirm-logout').addEventListener('click', () => {
+                localStorage.removeItem('phoneStoreUser');
+                overlay.classList.remove('active');
+                showToast(currentLang === 'ar' ? 'تم تسجيل الخروج بنجاح' : 'Logged out successfully', 'success');
+                setTimeout(() => {
+                    const path = window.location.pathname;
+                    const prefix = (path.includes('/admin/') || path.includes('/pages/')) ? '../' : '';
+                    window.location.href = prefix + 'index.html';
+                }, 500);
+            });
+
+            overlay.addEventListener('click', (e) => {
+                if (e.target === overlay) overlay.classList.remove('active');
+            });
+        }
+
+        // Update text for current language
+        overlay.querySelector('h3').textContent = translations[currentLang].logoutConfirmTitle || 'Sign Out';
+        overlay.querySelector('p').textContent = translations[currentLang].logoutConfirm || 'Are you sure you want to sign out?';
+        overlay.querySelector('.cancel-logout').textContent = translations[currentLang].cancel;
+        overlay.querySelector('.confirm-logout').textContent = translations[currentLang].logout;
+
+        setTimeout(() => overlay.classList.add('active'), 10);
     };
-
-    const updateWishlistCount = (count) => {
-        const counts = document.querySelectorAll('.wishlist-count');
-        counts.forEach(el => el.textContent = count);
-    };
-
-    let wishlistItems = JSON.parse(localStorage.getItem('phoneStoreWishlist') || '[]');
-
-    // Initialize counts
-    setTimeout(() => {
-        updateWishlistCount(wishlistItems.length);
-    }, 100);
 
     // --- Universal Click Delegation ---
     document.addEventListener('click', (e) => {
-        // Logout Logic
-        const logoutBtn = e.target.closest('.logout-btn');
-        if (logoutBtn) {
+        // User Dropdown Toggle
+        const dropdownBtn = e.target.closest('.user-dropdown-btn');
+        if (dropdownBtn) {
             e.preventDefault();
-            localStorage.removeItem('phoneStoreUser');
-            showToast(currentLang === 'ar' ? 'تم تسجيل الخروج' : 'Logged out successfully');
-            setTimeout(() => {
-                const path = window.location.pathname;
-                const prefix = (path.includes('/admin/') || path.includes('/pages/')) ? '../' : '';
-                window.location.href = prefix + 'index.html';
-            }, 1000);
+            const parent = dropdownBtn.closest('.user-dropdown-container');
+            const menu = parent ? parent.querySelector('.user-dropdown-menu') : null;
+            if (menu) {
+                menu.classList.toggle('active');
+
+                // Close other dropdowns
+                document.querySelectorAll('.user-dropdown-menu').forEach(m => {
+                    if (m !== menu) m.classList.remove('active');
+                });
+            }
+            return;
+        }
+
+        // Close dropdown when clicking outside
+        if (!e.target.closest('.user-dropdown-container')) {
+            document.querySelectorAll('.user-dropdown-menu').forEach(m => m.classList.remove('active'));
+        }
+
+        // Logout Logic (Custom Modal)
+        const logoutTrigger = e.target.closest('.logout-trigger-btn');
+        if (logoutTrigger) {
+            e.preventDefault();
+            showLogoutModal();
             return;
         }
 
@@ -1265,6 +1593,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (modal && form) {
                     delete form.dataset.editId;
                     form.reset();
+
+                    // Refresh categories list
+                    if (typeof populateProductCategories === 'function') populateProductCategories();
+
+                    // Clear custom handlers
+                    if (typeof clearSelectedProductImages === 'function') clearSelectedProductImages();
+
+                    const dynamicFields = document.getElementById('dynamicFieldsContainer');
+                    if (dynamicFields) dynamicFields.style.display = 'none';
 
                     const title = modal.querySelector('.modal-title');
                     const submitBtn = form.querySelector('[type="submit"]');
@@ -1295,6 +1632,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Record we are in edit mode
                     form.dataset.editId = id;
 
+                    // Refresh categories list
+                    if (typeof populateProductCategories === 'function') populateProductCategories();
+
                     // Update UI titles/buttons
                     const title = modal.querySelector('.modal-title');
                     const submitBtn = form.querySelector('[type="submit"]');
@@ -1316,7 +1656,37 @@ document.addEventListener('DOMContentLoaded', () => {
                             form.stock.value = prod.stock;
                             form.description.value = prod.description || '';
 
-                            // Image is tricky with file input, we can't set it, but we can show a preview or just leave it for re-upload
+                            // Set new fields
+                            if (form.inStock) form.inStock.checked = !!prod.in_stock;
+                            if (form.storage) form.storage.value = prod.storage || '';
+                            if (form.color) form.color.value = prod.color || '';
+
+                            // Trigger category change logic to show dynamic fields and load brands
+                            const categorySelect = document.getElementById('productCategorySelect');
+                            if (categorySelect) {
+                                categorySelect.dispatchEvent(new Event('change'));
+
+                                // Set brand after a short delay to allow brands to load
+                                setTimeout(() => {
+                                    if (form.brand) form.brand.value = prod.brand || '';
+                                }, 500);
+                            }
+
+                            // Show current images in preview
+                            const imagesPreview = document.getElementById('imagesPreview');
+                            if (imagesPreview) {
+                                imagesPreview.innerHTML = '';
+                                const images = prod.images || [prod.image];
+                                images.filter(img => img).forEach(imgUrl => {
+                                    const div = document.createElement('div');
+                                    div.className = 'image-preview-item';
+                                    div.innerHTML = `
+                                        <img src="${imgUrl}" alt="Preview">
+                                    `;
+                                    imagesPreview.appendChild(div);
+                                });
+                            }
+
                             if (title) title.textContent = currentLang === 'ar' ? 'تعديل المنتج' : 'Edit Product';
                             if (submitBtn) submitBtn.textContent = currentLang === 'ar' ? 'تحديث' : 'Update';
                             modal.classList.add('active');
@@ -1358,10 +1728,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Add to Cart
         const addToCartBtn = e.target.closest('.btn-primary');
-        if (addToCartBtn && (addToCartBtn.closest('.product-info') || addToCartBtn.closest('.hero-buttons')) && addToCartBtn.dataset.i18n === 'addToCart') {
-            cartCountValue++;
-            updateCartCount(cartCountValue);
-            showToast(currentLang === 'ar' ? 'تمت الإضافة إلى السلة بنجاح!' : 'Added to cart successfully!');
+        if (addToCartBtn && (addToCartBtn.closest('.product-card') || addToCartBtn.closest('.product-detail-area') || addToCartBtn.closest('.hero-buttons')) && addToCartBtn.dataset.i18n === 'addToCart') {
+            const productCard = addToCartBtn.closest('.product-card') || addToCartBtn.closest('.product-detail-area');
+            let productId;
+
+            if (productCard) {
+                productId = productCard.querySelector('.wishlist-btn')?.dataset.id || new URLSearchParams(window.location.search).get('id');
+            }
+
+            const product = allProducts.find(p => p.id == productId);
+            if (product) {
+                const qtyInput = productCard.querySelector('#productQty') || productCard.querySelector('.qty-input');
+                const quantityToAdd = qtyInput ? parseInt(qtyInput.value || qtyInput.textContent) || 1 : 1;
+
+                const existingItem = cartItems.find(item => item.id == product.id);
+                if (existingItem) {
+                    existingItem.quantity += quantityToAdd;
+                } else {
+                    cartItems.push({ ...product, quantity: quantityToAdd });
+                }
+                localStorage.setItem('phoneStoreCart', JSON.stringify(cartItems));
+                updateCartCount();
+                showToast(currentLang === 'ar' ? 'تمت الإضافة إلى السلة بنجاح!' : 'Added to cart successfully!');
+            } else {
+                // If product object not found directly (e.g. from a static link), just show toast as fallback
+                showToast(currentLang === 'ar' ? 'سلة التسوق ستتوفر قريباً!' : 'Shopping cart coming soon!', 'info');
+            }
             return;
         }
 
@@ -1430,13 +1822,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 cartItem.style.transform = 'translateX(20px)';
                 cartItem.style.transition = 'all 0.3s ease';
                 setTimeout(() => {
+                    const id = cartItem.dataset.id;
+                    const index = cartItems.findIndex(i => i.id == id);
+                    if (index !== -1) {
+                        cartItems.splice(index, 1);
+                        localStorage.setItem('phoneStoreCart', JSON.stringify(cartItems));
+                        updateCartCount();
+                    }
                     cartItem.remove();
                     updateCartTotals();
                     showToast(currentLang === 'ar' ? 'تم حذف المنتج من السلة' : 'Item removed from cart', 'info');
-                    if (cartCountValue > 0) {
-                        cartCountValue--;
-                        updateCartCount(cartCountValue);
-                    }
                 }, 300);
             }
             return;
@@ -1446,6 +1841,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (qtyBtn) {
             const container = qtyBtn.parentElement;
             const qtyInput = container.querySelector('.qty-text, .qty-input');
+            const cartItem = qtyBtn.closest('.cart-item');
+
             if (qtyInput) {
                 let currentQty = parseInt(qtyInput.value || qtyInput.textContent);
                 if (qtyBtn.textContent.trim() === '+') {
@@ -1453,6 +1850,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else if (qtyBtn.textContent.trim() === '-' && currentQty > 1) {
                     currentQty--;
                 }
+
+                if (cartItem) {
+                    const id = cartItem.dataset.id;
+                    const item = cartItems.find(i => i.id == id);
+                    if (item) {
+                        item.quantity = currentQty;
+                        localStorage.setItem('phoneStoreCart', JSON.stringify(cartItems));
+                        updateCartCount();
+                    }
+                }
+
                 if (qtyInput.tagName === 'INPUT') {
                     qtyInput.value = currentQty;
                 } else {
@@ -1494,22 +1902,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     const updateCartTotals = () => {
-        const cartItems = document.querySelectorAll('.cart-item');
         const subtotalElement = document.querySelector('.summary-row span:last-child');
         const totalElement = document.querySelector('.summary-total span:last-child');
 
         if (!subtotalElement || !totalElement) return;
 
-        let total = 0;
-        cartItems.forEach(item => {
-            const priceText = item.querySelector('.current-price').textContent;
-            const price = parseFloat(priceText.replace('$', '').trim());
-            const qtyText = item.querySelector('.qty-text, .qty-input');
-            const qty = parseInt(qtyText.value || qtyText.textContent);
-            total += price * qty;
-        });
+        let total = cartItems.reduce((sum, item) => sum + (parseFloat(item.price) * item.quantity), 0);
 
-        const formattedTotal = total.toFixed(2) + ' $';
+        const formattedTotal = total.toLocaleString() + ' $';
         subtotalElement.textContent = formattedTotal;
         totalElement.textContent = formattedTotal;
 
@@ -1526,6 +1926,43 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    const renderCartItems = () => {
+        const container = document.querySelector('.cart-items');
+        if (!container) return;
+
+        if (cartItems.length === 0) {
+            updateCartTotals();
+            return;
+        }
+
+        container.innerHTML = cartItems.map(item => `
+            <div class="glass-card cart-item" data-id="${item.id}">
+                <div class="cart-item-img">
+                    <img src="${item.image}" alt="${item.name}">
+                </div>
+                <div class="cart-item-info">
+                    <h3>${escapeHTML(item.name)}</h3>
+                    <p>${item.storage || ''} | ${item.color || ''}</p>
+                </div>
+                <div class="cart-item-qty">
+                    <button class="btn btn-primary qty-btn-sm">-</button>
+                    <span class="qty-text">${item.quantity}</span>
+                    <button class="btn btn-primary qty-btn-sm">+</button>
+                </div>
+                <div class="cart-item-price current-price">
+                    $${(parseFloat(item.price) * item.quantity).toLocaleString()}
+                </div>
+                <div class="cart-item-remove">
+                    <button class="remove-btn"><i class="fas fa-trash"></i></button>
+                </div>
+            </div>
+        `).join('');
+
+        updateCartTotals();
+    };
+
+    renderCartItems();
+
     // Form Simulation Handling
     document.querySelectorAll('form').forEach(form => {
         form.addEventListener('submit', (e) => {
@@ -1537,7 +1974,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (form.id === 'addProductForm') {
                 const formData = new FormData(form);
                 const data = Object.fromEntries(formData.entries());
-                const imageFile = form.querySelector('input[name="imageFile"]')?.files[0];
+
+                // Get selected images from our custom handler
+                const imageFiles = typeof getSelectedProductImages === 'function' ? getSelectedProductImages() : [];
 
                 submitBtn.disabled = true;
                 submitBtn.textContent = currentLang === 'ar' ? 'جاري الرفع...' : 'Uploading...';
@@ -1546,37 +1985,46 @@ document.addEventListener('DOMContentLoaded', () => {
                 (async () => {
                     const editId = form.dataset.editId;
                     let existingProd = editId ? allProducts.find(p => p.id == editId) : null;
-                    let imageUrl = existingProd ? existingProd.image : '';
+                    let imageUrls = existingProd ? (existingProd.images || [existingProd.image]) : [];
 
-                    // Validate image for new items
-                    if (!editId && !imageFile) {
-                        showToast(currentLang === 'ar' ? 'يرجى اختيار صورة للمنتج' : 'Please select a product image', 'error');
+                    // Validate images for new items
+                    if (!editId && imageFiles.length === 0) {
+                        showToast(currentLang === 'ar' ? 'يرجى اختيار صورة واحدة على الأقل' : 'Please select at least one image', 'error');
                         submitBtn.disabled = false;
                         submitBtn.textContent = originalText;
                         return;
                     }
 
-                    // Upload image if selected
-                    if (imageFile) {
-                        submitBtn.textContent = currentLang === 'ar' ? 'جاري رفع الصورة...' : 'Uploading image...';
-                        imageUrl = await uploadImage(imageFile, 'products');
-                        if (!imageUrl) {
-                            showToast(currentLang === 'ar' ? 'فشل رفع الصورة' : 'Image upload failed', 'error');
+                    // Upload images if selected
+                    if (imageFiles.length > 0) {
+                        submitBtn.textContent = currentLang === 'ar' ? 'جاري رفع الصور...' : 'Uploading images...';
+                        const uploadedUrls = typeof uploadMultipleImages === 'function'
+                            ? await uploadMultipleImages(imageFiles, 'categories')
+                            : [];
+
+                        if (uploadedUrls.length === 0) {
+                            showToast(currentLang === 'ar' ? 'فشل رفع الصور' : 'Image upload failed', 'error');
                             submitBtn.disabled = false;
                             submitBtn.textContent = originalText;
                             return;
                         }
+                        imageUrls = uploadedUrls;
                     }
 
                     submitBtn.textContent = currentLang === 'ar' ? 'جاري الحفظ...' : 'Saving...';
 
+                    // Build product data with new fields
                     const productData = {
                         name: data.name,
                         category: data.category,
                         price: parseFloat(data.price),
-                        stock: parseInt(data.stock),
-                        image: imageUrl,
-                        description: data.description || ''
+                        in_stock: data.inStock === 'on',
+                        image: imageUrls[0] || '',
+                        images: imageUrls,
+                        description: data.description || '',
+                        brand: data.brand || null,
+                        storage: data.storage || null,
+                        color: data.color || null
                     };
 
                     let result;
@@ -1601,7 +2049,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                     </td>
                                     <td>${categoryName}</td>
                                     <td>$${parseFloat(result.price).toLocaleString()}</td>
-                                    <td>${result.stock}</td>
+                                    <td>
+                                        <span class="status-badge ${result.in_stock ? 'status-completed' : 'status-failed'}">
+                                            ${result.in_stock ? (translations[currentLang].inStock || 'متوفر') : (translations[currentLang].outOfStock || 'نفذت')}
+                                        </span>
+                                    </td>
                                     <td><span class="status-badge status-completed" data-i18n="active">${translations[currentLang].active}</span></td>
                                     <td>
                                         <div class="action-btns">
@@ -1641,7 +2093,11 @@ document.addEventListener('DOMContentLoaded', () => {
                                     </td>
                                     <td>${categoryName}</td>
                                     <td>$${parseFloat(result.price).toLocaleString()}</td>
-                                    <td>${result.stock}</td>
+                                    <td>
+                                        <span class="status-badge ${result.in_stock ? 'status-completed' : 'status-failed'}">
+                                            ${result.in_stock ? (translations[currentLang].inStock || 'متوفر') : (translations[currentLang].outOfStock || 'نفذت')}
+                                        </span>
+                                    </td>
                                     <td><span class="status-badge status-completed" data-i18n="active">${translations[currentLang].active}</span></td>
                                     <td>
                                         <div class="action-btns">
@@ -1870,7 +2326,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             localStorage.setItem('phoneStoreUser', 'admin');
                             showToast(currentLang === 'ar' ? 'مرحباً بك مدير الموقع...' : 'Welcome Admin...', 'success');
                             setTimeout(() => {
-                                window.location.href = prefix + 'admin/products.html';
+                                window.location.href = prefix + 'admin-products.html';
                             }, 500);
                         } else {
                             showToast(currentLang === 'ar' ? 'كلمة المرور غير صحيحة' : 'Invalid password', 'error');
@@ -1886,6 +2342,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     submitBtn.disabled = false;
                     submitBtn.textContent = originalText;
                 } else if (window.location.pathname.includes('checkout')) {
+                    // Clear Cart
+                    localStorage.removeItem('phoneStoreCart');
+                    cartItems = [];
+                    updateCartCount();
                     window.location.href = 'order-success.html';
                 }
             }, 1000);
@@ -1989,7 +2449,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                 localStorage.setItem('phoneStoreUser', 'admin');
                                 showToast(currentLang === 'ar' ? 'مرحباً بك مدير الموقع...' : 'Welcome Admin...', 'success');
                                 setTimeout(() => {
-                                    window.location.href = prefix + 'admin/products.html';
+                                    window.location.href = prefix + 'admin-products.html';
                                 }, 500);
                             } else {
                                 showToast(currentLang === 'ar' ? 'كلمة المرور غير صحيحة' : 'Invalid password', 'error');
@@ -2014,8 +2474,6 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     };
-
-    initAuthModal();
 
     // Trigger Auth Modal
     document.addEventListener('click', (e) => {
@@ -2049,19 +2507,84 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Update Page Content
-        const titleEl = document.querySelector('.product-info-detail h1');
-        const brandEl = document.querySelector('.product-info-detail .text-gradient');
-        const priceEl = document.querySelector('.current-price');
-        const descEl = document.querySelector('.description');
+        const titleEl = document.getElementById('productTitle');
+        const brandLgEl = document.getElementById('productCategoryLg');
+        const priceEl = document.getElementById('currentPrice');
+        const descEl = document.getElementById('productDescription');
         const mainImg = document.getElementById('mainImg');
+        const availabilityEl = document.getElementById('availabilityStatus');
+        const thumbContainer = document.getElementById('thumbImages');
+        const storageContainer = document.getElementById('storageContainer');
+        const storageOptions = document.getElementById('storageOptions');
+        const colorContainer = document.getElementById('colorContainer');
+        const colorOptions = document.getElementById('colorOptions');
+        const addToCartBtn = document.getElementById('addToCartBtn');
+        const wishlistBtn = document.getElementById('wishlistBtnDetail');
 
         if (titleEl) titleEl.textContent = product.name;
-        if (brandEl) brandEl.textContent = product.category || ''; // Category as brand for now
+
+        // Load category name for brand label
+        if (brandLgEl) {
+            if (allCategories.length === 0 && typeof fetchCategories === 'function') {
+                allCategories = await fetchCategories();
+            }
+            const cat = allCategories.find(c => c.id === product.category);
+            brandLgEl.textContent = cat ? cat.name.toUpperCase() : (product.category || '').toUpperCase();
+        }
+
         if (priceEl) priceEl.textContent = `$${parseFloat(product.price).toLocaleString()}`;
         if (descEl) descEl.textContent = product.description;
+
         if (mainImg) {
             mainImg.src = product.image;
             mainImg.alt = product.name;
+        }
+
+        // Availability
+        if (availabilityEl) {
+            const isAvailable = product.in_stock !== false;
+            availabilityEl.innerHTML = isAvailable
+                ? `<i class="fas fa-check-circle"></i> ${translations[currentLang].inStock || 'متوفر في المخزن'}`
+                : `<i class="fas fa-times-circle"></i> ${translations[currentLang].outOfStock || 'نفذت الكمية'}`;
+            availabilityEl.style.color = isAvailable ? 'var(--success-color)' : 'var(--danger-color)';
+            if (addToCartBtn) {
+                addToCartBtn.disabled = !isAvailable;
+                if (!isAvailable) addToCartBtn.style.opacity = '0.5';
+            }
+        }
+
+        // Multiple Images
+        if (thumbContainer) {
+            const images = product.images || [product.image];
+            if (images.length > 1) {
+                thumbContainer.innerHTML = images.map((img, i) => `
+                    <div class="thumb ${i === 0 ? 'active' : ''}">
+                        <img src="${img}" alt="Thumb ${i + 1}" onclick="document.getElementById('mainImg').src='${img}'; document.querySelectorAll('.thumb').forEach(t=>t.classList.remove('active')); this.parentElement.classList.add('active');">
+                    </div>
+                `).join('');
+            } else {
+                thumbContainer.style.display = 'none';
+            }
+        }
+
+        // Storage
+        if (product.storage && storageContainer && storageOptions) {
+            storageContainer.style.display = 'block';
+            storageOptions.innerHTML = `<button class="option-btn active">${product.storage}</button>`;
+        }
+
+        // Color
+        if (product.color && colorContainer && colorOptions) {
+            colorContainer.style.display = 'block';
+            colorOptions.innerHTML = `<button class="option-btn active">${product.color}</button>`;
+        }
+
+        // Wishlist State for Detail Page
+        if (wishlistBtn) {
+            wishlistBtn.dataset.id = product.id;
+            const isWishlisted = wishlistItems.some(item => item.id === product.id);
+            wishlistBtn.innerHTML = `<i class="${isWishlisted ? 'fas' : 'far'} fa-heart"></i>`;
+            if (isWishlisted) wishlistBtn.classList.add('active');
         }
 
         // Update tab title
@@ -2121,5 +2644,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     initScrollReveal();
     handleScroll();
+
+    // Final Init calls
+    initApp();
+    initAuthModal();
 });
 
